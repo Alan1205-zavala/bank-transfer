@@ -1,0 +1,60 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+package "com.example.bank_transfer.model" {
+  class Account {
+    -id: Long
+    -ownerName: String
+    -balance: double
+    +getId(): Long
+    +getOwnerName(): String
+    +getBalance(): double
+    +setBalance(double): void
+  }
+}
+
+package "com.example.bank_transfer.repository" {
+  interface AccountRepository {
+    +findById(Long): Optional<Account>
+    +save(Account): Account
+  }
+}
+
+package "com.example.bank_transfer.service" {
+  class TransferService {
+    -accountRepository: AccountRepository
+    +transferMoney(Long, Long, double): void
+  }
+}
+
+package "com.example.bank_transfer.controller" {
+  class TransferController {
+    -transferService: TransferService
+    +transferMoney(TransferRequest): ResponseEntity<String>
+  }
+}
+
+package "com.example.bank_transfer.dto" {
+  class TransferRequest {
+    -sourceAccountId: Long
+    -targetAccountId: Long
+    -amount: double
+  }
+}
+
+package "com.example.bank_transfer.exception" {
+  class AccountNotFoundException {
+    +AccountNotFoundException(String)
+  }
+  class InsufficientFundsException {
+    +InsufficientFundsException(String)
+  }
+}
+
+TransferController --> TransferService
+TransferService --> AccountRepository
+AccountRepository ..> Account
+TransferController --> TransferRequest
+TransferService ..> AccountNotFoundException
+TransferService ..> InsufficientFundsException
+@enduml
