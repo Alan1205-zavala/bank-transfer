@@ -1,57 +1,48 @@
 # Sistema de Transferencias Bancarias
 
 ## Diagrama de Clases
+![Diagrama UML](docs/diagrams/bank-transfer-uml.png)
 
-```mermaid
-classDiagram
-    class Account {
-        -Long id
-        -String ownerName
-        -BigDecimal balance
-        +withdraw(BigDecimal) boolean
-        +deposit(BigDecimal) void
-    }
-    
-    class TransferRequest {
-        -Long fromAccountId
-        -Long toAccountId
-        -BigDecimal amount
-    }
-    
-    class TransferService {
-        +transfer(Long, Long, BigDecimal) boolean
-    }
-    
-    class TransferController {
-        +transfer(TransferRequest) ResponseEntity~String~
-    }
-    
-    TransferController --> TransferService
-    TransferService --> AccountRepository
-    AccountRepository ..> Account
-    TransferController --> TransferRequest
-```
+## Tecnologías
+- Java 21
+- Spring Boot 3.4.5
+- H2 Database
+- Maven
 
-## Uso del API
+## Uso
+```powershell
+# Transferencia entre cuentas
+$body = @{
+    sourceAccountId = 1
+    targetAccountId = 2
+    amount = 100
+} | ConvertTo-Json
 
-### 1. Iniciar la aplicación:
-```bash
-mvn spring-boot:run
-```
+Invoke-RestMethod -Uri "http://localhost:8080/api/transfer" -Method Post -Body $body -ContentType "application/json"
 
-### 2. Acceder a la consola H2:
-- URL: http://localhost:8080/h2-console
-- JDBC URL: `jdbc:h2:mem:bankdb`
-- User: `sa`
-- Password: (vacío)
+com.example.bank_transfer
+├── controller    # Endpoints REST
+├── service       # Lógica de negocio
+├── repository    # Acceso a datos
+├── model         # Entidades
+├── dto           # Objetos de transferencia
+└── exception     # Manejo de errores
 
-### 3. Realizar transferencia:
-```bash
-curl -X POST -H "Content-Type: application/json" \
--d '{"fromAccountId":1,"toAccountId":2,"amount":100}' \
-http://localhost:8080/transfer
-```
 
-### Respuestas posibles:
-- 200 OK: "Transferencia exitosa"
-- 400 Bad Request: "Fondos insuficientes" o mensaje de error
+### 4. Para generar la imagen del diagrama:
+1. Instala PlantUML (plugin de IntelliJ o gráficamente con [planttext.com](https://www.planttext.com))
+2. Exporta el diagrama como PNG y guárdalo en `docs/diagrams/`
+
+### 5. Comandos útiles para Git:
+```powershell
+# Ver estado actual
+git status
+
+# Agregar cambios específicos
+git add docs/diagrams/bank-transfer-uml.puml
+
+# Hacer commit
+git commit -m "Actualiza diagrama UML"
+
+# Subir cambios
+git push
